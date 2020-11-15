@@ -6,10 +6,15 @@ class BuildIndex:
     '''
     Builds Positional Inverted Index.
     '''
+    print('indexing')
     def __init__(self):
         self.docID_doc = {}
         '''
         Dictionary of the form {docID:'filename'}.
+        '''
+        self.doc_content = []
+        '''
+        List of Documents Content
         '''
         self.docID_content = {}
         '''
@@ -27,6 +32,7 @@ class BuildIndex:
         '''
         Dictionary of the form {term: {docID: [posIndex1, posIndex2]}, ...}, ...}
         '''
+        self.tfidf = {}
 
     def get_no_of_doc(self):
         '''
@@ -64,15 +70,16 @@ class BuildIndex:
         '''
         Process documents, cleans them and builds docID_content dictionary
         '''
-        docs = os.listdir('data/all')
+        docs = os.listdir('data/bihar')
         for doc in docs:
             print(doc)
             file_extension = doc[-3:]
             if file_extension == 'txt':
-                filename = 'data/all/' + doc
+                filename = 'data/bihar/' + doc
                 f = open(filename, 'r', encoding="utf-8")
                 self.create_docID_doc(self.docID, doc)
                 content = text_cleaning(f)
+                self.doc_content.append(' '.join(content))
                 self.update_vocabulary(content)
                 self.docID_content[self.docID] = content
                 self.docID += 1
@@ -105,10 +112,15 @@ class BuildIndex:
                         self.inverted_pos_index[word][id] = doc_posIndex[id][word]
                 else:
                     self.inverted_pos_index[word] = {id: doc_posIndex[id][word]}
-        return self.inverted_pos_index
-
+            
+    def execute(self):
+        '''
+        Driver function
+        '''
+        
+        self.create_docID_content() 
+        self.create_inverted_index()
 
 if __name__ == "__main__":
     index = BuildIndex()
-    index.create_docID_content()
-    inverted_index = index.create_inverted_index()
+    index.execute()
