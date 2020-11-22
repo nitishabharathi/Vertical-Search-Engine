@@ -9,6 +9,10 @@ class Ranking:
         '''
         Query Object
         '''
+        self.doc_score = document_scoring.DocScore()
+        '''
+        Document Scoring Object
+        '''
         self.similarity_scores = []
         '''
         Document - Query Cosine Similarity Scores
@@ -37,11 +41,11 @@ class Ranking:
             similarity = cosine_similarity([doc_vector], [query_vector])
             self.similarity_scores.append(similarity[0][0])
             
-    def document_ranking(self):
+    def compute_document_ranking(self):
         '''
         Calculates Document Ranking based on Document - Query Cosine Similarity Scores
         '''
-        s = numpy.array(self.similarity_scores) 
+        s = np.array(self.similarity_scores) 
         sort_document = np.argsort(s)
         sort_document = [x + 1 for x in sort_document]
         self.document_ranking = sort_document[::-1]
@@ -50,11 +54,14 @@ class Ranking:
         '''
         Prints top 10 Relevant Documents
         '''
+        self.compute_similarity_score()
+        self.compute_document_ranking()
         corpus = self.query.get_doc_content()
-        print(corpus[0])
+        print(self.document_ranking)
+        
         for i in range(10):
             print('\n Document No ',i+1,'\n')
-            print(corpus[self.document_ranking[i]])
+            print(corpus[self.document_ranking[i]-1])
 
 if __name__ == "__main__":
     ranking = Ranking(['India','girl','education'])

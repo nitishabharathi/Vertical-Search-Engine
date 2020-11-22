@@ -40,24 +40,26 @@ class Query:
         '''
         Computes Query TF-IDF Vector
         '''
-        doc_score.compute_doc_score()
-        terms = doc_score.get_terms()
-        term_idf = doc_score.get_term_idf()
-        query_term_frequency = dict(Counter(query))
+        self.doc_score.compute_doc_score()
+        terms = self.doc_score.get_terms()
+        term_idf = self.doc_score.get_term_idf()
+        query_term_frequency = dict(Counter(self.query))
 
         query_tfidf = {}
         for term in query_term_frequency.keys():
-            query_tfidf[term] = query_term_frequency[term]*term_idf[term]
+            try:
+                query_tfidf[term] = query_term_frequency[term]*term_idf[term]
+            except:
+                continue
+        self.query_vector = np.zeros(len(terms))
 
-        query_vector = np.zeros(len(terms))
-
-        for term in query:
+        for term in self.query:
             try: 
                 term_index = terms.index(term)
                 query_vector[term_index] = query_tfidf[term]
             except:
                 continue
-            
+        #return doc_score,query_vector
             
         
         
